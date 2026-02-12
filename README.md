@@ -2,6 +2,8 @@
 
 A ComfyUI custom node that converts an audio input into a spectrogram image.
 
+![이미지 스펙트럼 예시](https://github.com/bemoregt/ComfyUI_Spectrogram/blob/main/ScrShot%207.png)
+
 ## Features
 
 - Supports both **Mel** and **Linear** (STFT) spectrograms
