@@ -2,6 +2,8 @@
 
 A ComfyUI custom node that computes the **Fractional Fourier Transform (FrFT)** of an image and outputs its magnitude spectrum.
 
+![이미지 스펙트럼 예시](https://github.com/bemoregt/ComfyUI_FrFT/blob/main/ScrShot%2012.png)
+
 ---
 
 ## What is the FrFT?
