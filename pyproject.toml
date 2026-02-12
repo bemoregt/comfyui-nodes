@@ -1,0 +1,14 @@
+[project]
+name = "comfyui-audio-spectrogram"
+version = "1.0.0"
+description = "ComfyUI custom node: Audio → Spectrogram image"
+license = { file = "LICENSE" }
+dependencies = ["matplotlib", "Pillow", "numpy", "torch"]
+
+[project.optional-dependencies]
+recommended = ["torchaudio"]
+
+[tool.comfy]
+PublisherId = "local"
+DisplayName = "Audio to Spectrogram"
+Icon = ""
