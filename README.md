@@ -2,6 +2,8 @@
 
 A ComfyUI custom node that computes a **Spectral Residual Saliency Map** from an input image.
 
+![이미지 스펙트럼 예시](https://github.com/bemoregt/ComfyUI_SRSM/blob/main/ScrShot%207.png)
+
 Based on the paper:
 > Hou, X., & Zhang, L. (2007). *Saliency Detection: A Spectral Residual Approach.* CVPR 2007.
 
