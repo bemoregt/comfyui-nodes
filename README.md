@@ -4,6 +4,8 @@ A ComfyUI custom node that computes a **visual saliency map** from a color image
 
 Unlike conventional per-channel approaches, this node encodes all three RGB channels simultaneously as a single pure quaternion, preserving cross-channel color correlations throughout the frequency analysis.
 
+![이미지 스펙트럼 예시](https://github.com/bemoregt/ComfyUI_QFT_SRSM/blob/main/ScrShot%209.png)
+
 ---
 
 ## How It Works
