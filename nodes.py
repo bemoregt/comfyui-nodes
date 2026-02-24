@@ -7,41 +7,42 @@ minimal ghosting compared to naive linear interpolation.
 """
 
 import os
-import tempfile
+import numpy as np
+import cv2
 import folder_paths
 
 from .phase_interpolation import interpolate_video_2x
+
+VIDEO_EXTENSIONS = ('.mp4', '.avi', '.mov', '.webm', '.mkv', '.gif', '.m4v', '.flv')
+
+
+def _list_input_videos():
+    input_dir = folder_paths.get_input_directory()
+    if not os.path.isdir(input_dir):
+        return []
+    return sorted(
+        f for f in os.listdir(input_dir)
+        if f.lower().endswith(VIDEO_EXTENSIONS)
+    )
 
 
 class PhaseBasedFrameInterpolation:
     """
     2x Frame Interpolation via Phase-Based Fourier Method.
 
-    Accepts a video file path, inserts one interpolated frame between
-    every pair of consecutive frames, and writes the result to an output
-    video file.
-
-    Algorithm
-    ---------
-    1. Convert each frame pair to Lab color space.
-    2. Build complex analytic pyramids from the luminance channel.
-    3. Compute hierarchically-unwrapped phase differences.
-    4. Reconstruct interpolated luminance from amplitude + phase.
-    5. Blend chrominance linearly (human vision is less sensitive there).
-    6. Assemble output video at 2× the original frame rate.
+    Accepts a video file from the ComfyUI input directory,
+    inserts one interpolated frame between every pair of consecutive frames,
+    and writes the result to the ComfyUI output directory.
     """
 
     @classmethod
     def INPUT_TYPES(cls):
+        videos = _list_input_videos()
         return {
             "required": {
-                "video_path": (
-                    "STRING",
-                    {
-                        "default": "",
-                        "multiline": False,
-                        "tooltip": "Absolute path to the input video file (mp4, avi, mov, ...)",
-                    },
+                "video": (
+                    videos,
+                    {"video_upload": True},
                 ),
                 "pyramid_levels": (
                     "INT",
@@ -69,6 +70,7 @@ class PhaseBasedFrameInterpolation:
 
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("output_video_path",)
+    OUTPUT_NODE = True
     FUNCTION = "interpolate"
     CATEGORY = "video/interpolation"
     DESCRIPTION = (
@@ -77,38 +79,57 @@ class PhaseBasedFrameInterpolation:
         "doubling the frame rate while preserving sharpness and structure."
     )
 
-    def interpolate(
-        self,
-        video_path: str,
-        pyramid_levels: int,
-        output_filename: str,
-    ) -> tuple:
-        video_path = video_path.strip()
-        if not video_path:
-            raise ValueError("video_path must not be empty")
+    def interpolate(self, video: str, pyramid_levels: int, output_filename: str):
+        # Resolve input path from ComfyUI input directory
+        input_dir = folder_paths.get_input_directory()
+        video_path = folder_paths.get_annotated_filepath(video) \
+            if "[" in video else os.path.join(input_dir, video)
+
         if not os.path.isfile(video_path):
             raise FileNotFoundError(f"Video not found: {video_path}")
 
-        # Resolve output directory
+        # Resolve output path
         output_dir = folder_paths.get_output_directory()
         os.makedirs(output_dir, exist_ok=True)
 
-        # Sanitize filename
-        if not output_filename.strip():
-            output_filename = "phase_interp_output.mp4"
-        base, ext = os.path.splitext(output_filename)
+        base, ext = os.path.splitext(output_filename.strip() or "phase_interp_output.mp4")
         if not ext:
             ext = ".mp4"
-        out_path = os.path.join(output_dir, base + ext)
+        out_filename = base + ext
+        out_path = os.path.join(output_dir, out_filename)
 
-        # Run interpolation
-        result = interpolate_video_2x(
+        # Run phase-based interpolation
+        interpolate_video_2x(
             input_path=video_path,
             output_path=out_path,
             num_levels=pyramid_levels,
         )
 
-        return (result,)
+        # Extract first frame as thumbnail preview for the UI
+        previews = []
+        cap = cv2.VideoCapture(out_path)
+        ret, frame = cap.read()
+        cap.release()
+        if ret:
+            thumb_name = base + "_thumb.png"
+            thumb_path = os.path.join(output_dir, thumb_name)
+            cv2.imwrite(thumb_path, frame)
+            previews = [{"filename": thumb_name, "subfolder": "", "type": "output"}]
+
+        return {
+            "ui": {
+                "video": [
+                    {
+                        "filename": out_filename,
+                        "subfolder": "",
+                        "type": "output",
+                        "format": "video/mp4",
+                    }
+                ],
+                "images": previews,
+            },
+            "result": (out_path,),
+        }
 
 
 # ---------------------------------------------------------------------------
