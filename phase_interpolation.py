@@ -310,7 +310,39 @@ def interpolate_frames(frame1: np.ndarray, frame2: np.ndarray,
 
 
 # ---------------------------------------------------------------------------
-# Video processing
+# Batch (tensor-based) interpolation  — used by the ComfyUI node
+# ---------------------------------------------------------------------------
+
+def interpolate_batch_2x(frames: list, num_levels: int = 6) -> list:
+    """
+    Insert one interpolated frame between every consecutive pair.
+
+    Parameters
+    ----------
+    frames     : list of (H, W, 3) uint8 RGB arrays
+    num_levels : steerable pyramid levels
+
+    Returns
+    -------
+    out_frames : list length 2*N-1, alternating originals and interpolated
+    """
+    if len(frames) < 2:
+        return frames
+
+    out = []
+    for i, frame in enumerate(frames):
+        out.append(frame)
+        if i < len(frames) - 1:
+            interp = interpolate_frames(frame, frames[i + 1],
+                                        alpha=0.5, num_levels=num_levels)
+            out.append(interp)
+            if (i + 1) % 10 == 0 or i == 0:
+                print(f"[PhaseInterp] {i + 1}/{len(frames) - 1} pairs done")
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Video file processing  (kept for standalone / CLI use)
 # ---------------------------------------------------------------------------
 
 def interpolate_video_2x(input_path: str, output_path: str,
