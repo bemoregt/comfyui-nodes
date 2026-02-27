@@ -250,14 +250,17 @@ class GaussianSplattingPreviewNode:
 
         R = Rx @ Ry  # combined rotation
 
-        # Camera placed at z=2.5 looking toward the origin
-        cam_pos = np.array([0.0, 0.0, 2.5], dtype=np.float32)
+        # Camera placed at z=-2.5 looking toward +Z (scene is near origin)
+        # OpenCV convention: camera looks down +Z, so cam must be at negative Z
+        # to have the scene (origin) in front of it.
+        cam_pos = np.array([0.0, 0.0, -2.5], dtype=np.float32)
 
-        # Transform to camera space
+        # Transform to camera space: x_cam = R @ (x_world - cam_pos)
         pts_cam = (pts3d - cam_pos) @ R.T  # (N, 3)
 
-        # Keep only points in front of camera
+        # Keep only points in front of camera (z_cam > 0)
         front = pts_cam[:, 2] > 0.05
+        print(f"[3DGS] {front.sum()} / {len(pts_cam)} points in front of camera.")
         pts_cam = pts_cam[front]
         col     = colors[front]
 
