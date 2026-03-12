@@ -3,6 +3,12 @@
 A ComfyUI custom node pack for 2-D Discrete Cosine Transform (DCT) based frequency-domain filtering.
 Draw a mask directly on the DCT spectrum inside the node to zero out any frequency band, then reconstruct the filtered image with the inverse transform.
 
+![이미지 스펙트럼 예시](https://github.com/bemoregt/ComfyUI_DCT/blob/main/ScrShot%207.png)
+
+![이미지 스펙트럼 예시](https://github.com/bemoregt/ComfyUI_DCT/blob/main/ScrShot%208.png)
+
+![이미지 스펙트럼 예시](https://github.com/bemoregt/ComfyUI_DCT/blob/main/ScrShot%209.png)
+
 ---
 
 ## Nodes
