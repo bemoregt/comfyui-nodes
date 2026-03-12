@@ -68,14 +68,19 @@ class DCT2DNode:
 
             batch_dct.append(coeffs.astype(np.float32))
 
-            # Log-magnitude preview: log(1 + |c|) normalised to [0, 1] per channel
+            # Log-magnitude preview with percentile normalisation.
+            # Min-max would make the whole image nearly black because the DC
+            # component (0,0) dominates by several orders of magnitude.
+            # Clipping at the 99th percentile keeps all other coefficients
+            # visible and maps the DC spike to pure white.
             log_mag = np.log1p(np.abs(coeffs)).astype(np.float32)
             preview = np.zeros_like(log_mag)
             for c in range(log_mag.shape[2]):
                 ch = log_mag[:, :, c]
-                lo, hi = ch.min(), ch.max()
+                lo = float(np.percentile(ch, 0))
+                hi = float(np.percentile(ch, 99))
                 if hi > lo:
-                    preview[:, :, c] = (ch - lo) / (hi - lo)
+                    preview[:, :, c] = np.clip((ch - lo) / (hi - lo), 0.0, 1.0)
 
             batch_preview.append(preview)
 
