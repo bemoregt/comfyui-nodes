@@ -1,5 +1,7 @@
 # Cross-BiMagnitude Stitch — ComfyUI Custom Node
 
+![Cross-BiMagnitude Stitch screenshot](ScrShot%206.png)
+
 A ComfyUI custom node package that aligns and stitches two images using
 **Cross-Bimagnitude**, the magnitude component of the Cross-Bispectrum from
 Higher-Order Statistics (HOS).
