@@ -155,7 +155,6 @@ class EVMVideoFile:
     RETURN_NAMES  = ("output_video_path",)
     FUNCTION      = "process_video_file"
     CATEGORY      = "video/EVM"
-    OUTPUT_NODE   = True
 
     # ── helpers ───────────────────────────────────────────────────────────────
 
