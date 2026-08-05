@@ -1,0 +1,25 @@
+# ComfyUI 설치본 (대용량) 제외
+ComfyUI/
+
+# 생성된 비디오 파일
+*.mp4
+*.mov
+*.avi
+*.webm
+batch_outputs/output_*.mp4
+
+# 로그 파일
+*.log
+
+# 파이썬 캐시
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# macOS 시스템 파일
+.DS_Store
+
+# 로컬 설정
+.claude/
+.env
