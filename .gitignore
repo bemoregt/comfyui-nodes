@@ -8,6 +8,9 @@ ComfyUI/
 *.webm
 batch_outputs/output_*.mp4
 
+# 리드미에 표시할 샘플 출력 영상(저장소 루트)은 예외
+!/output_06_seed2070229165.mp4
+
 # 로그 파일
 *.log
 
